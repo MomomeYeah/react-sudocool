@@ -1,38 +1,143 @@
-.App {
-  text-align: center;
+html * {
+  box-sizing: border-box;
 }
+body {
+  background-color: lightgrey;
+  width: 100%;
+  margin: 0;
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+  /* cap content width at 1000px */
+  --padding-total: calc(100% - 1000px);
+  padding-left: calc(var(--padding-total) / 2);
+  padding-right: calc(var(--padding-total) / 2);
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+  /* use full height of page */
   min-height: 100vh;
+
+  /* display flex to enable content to flex-grow as needed */
+  display: flex;
+  flex-direction: column;
+
+  /* standard light / dark colors */
+  --color-dark: #333333;
+  --color-light: white;
+}
+
+/* nav bar with clickable link to return to homepage */
+nav.title {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  padding: 1em 2em;
+}
+nav.title h1 {
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+  font-style: normal;
+  font-weight: normal;
+}
+
+/* any input/link/etc. for performing an action */
+.button {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+
+  font-size: 1em;
+
+  padding: 1em 2em;
+  margin: 0 1em;
+  border: 1px solid var(--color-dark);
+  border-radius: 0;
+  width: 10em;
+
+  cursor: pointer;
+  text-decoration: none;
+  font-family: Arial;
+}
+
+/* wrapper for all page content, growing to full document height */
+#root {
+  background-color: var(--color-light);
+
+  padding: 1em 0;
+  width: 100%;
+
+  flex-grow: 1;
+}
+
+/* center sudocool board in main element */
+div.sudocool-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+/* Pure CSS aspect ratio: https://codepen.io/ItScofield/pen/PNVZoQ */
+div.sudocool-table-wrapper {
+  /* relative-positioned so child can be absolute, set to desired width */
+  position: relative;
+  width: min(100%, 740px);
+  min-width: 380px;
+  margin-bottom: 1em;
+}
+div.sudocool-table-wrapper::before {
+  /* set padding-top to 100%, meaning 100% of parent width */
+  /* this gives us a 1:1 aspect ratio */
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+
+div.sudocool-table {
+  /* dark background to serve as grid lines */
+  background-color: var(--color-dark);
+
+  /* set up grid container with 9 rows / columns */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+
+  /* set space between grid boxes */
+  --content-spacing: 2px;
+  column-gap: var(--content-spacing);
+  row-gap: var(--content-spacing);
+  padding: var(--content-spacing);
+
+  /* use absolute positioning to counteract parent padding */
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+div.sudocool-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+/* make each input element a perfect square, taking up all available space */
+input.sudocool-item {
+  border: 1px solid var(--color-dark);
+  padding: 0;
+  margin: 0;
+
+  height: 100%;
+  width: 100%;
+
+  text-align: center;
+  font-size: 1.5em;
+}
+
+input.sudocool-item.prefilled {
+  background-color: lightgrey;
+}
+
+/* give invalid input a red border */
+input.sudocool-item.invalid {
+  background-color: IndianRed;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
