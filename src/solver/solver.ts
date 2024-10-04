@@ -1,6 +1,10 @@
+import { Board } from './board';
+
 export class Solver {
-    
-    constructor(board) {
+   
+    public board: Board;
+
+    constructor(board: Board) {
         this.board = board;
     }
 
@@ -40,29 +44,27 @@ export class Solver {
         that cell's value can only be that posibility */
 
         let found = false;
-        const collections = {
-            "row": this.board.rows,
-            "col": this.board.columns,
-            "section": this.board.sections
-        };
-        for (const [collection_key, collection] of Object.entries(collections)) {
+        const collections = [
+            this.board.rows,
+            this.board.columns,
+            this.board.sections
+        ];
+        collections.forEach(collection => {
             // for each row, column, or section
             collection.forEach((collection_item, key) => {
-                // for each possibility remaining in the collection
-                collection_item.possibilities.forEach(possibility => {
+                // for each possibility remaining in the row / column / section
+                collection_item.possibilities.forEach((possibility: number) => {
                     // find all other squares in the same row, column, or section with that possibility also remaining
-                    const matchingSquares = this.board.squares.filter(
-                        square => square[collection_key] === key && square.possibilities.includes(possibility));
-    
+                    const squaresWithPossibility = collection_item.squares.filter(square => square.possibilities.includes(possibility));
                     // if there is only one such square. solve the square
-                    if ( matchingSquares.length === 1 ) {
+                    if ( squaresWithPossibility.length === 1 ) {
                         found = true;
-                        const square = matchingSquares[0];
+                        const square = squaresWithPossibility[0];
                         this.board.solveSquareByPosition(square.row, square.col, possibility);
                     }
                 });
             });
-        }
+        });
 
         return found;
     }

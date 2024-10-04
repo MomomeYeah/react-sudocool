@@ -1,9 +1,14 @@
-import { Square } from './square.js';
-import { Row, Column, Section } from './squareSet.js';
-import { Solver } from './solver.js';
+import { Square } from './square';
+import { Row, Column, Section } from './squareSet';
+import { Solver } from './solver';
 
 export class Board {
     /* Class representing the Sudoku board */
+
+    public rows: Map<number, Row>;
+    public columns: Map<number, Column>;
+    public sections: Map<number, Section>;
+    public squares: Array<Square>;
 
     constructor() {
         this.rows = new Map();
@@ -17,19 +22,27 @@ export class Board {
 
         this.squares = [];
         document.querySelectorAll(".sudocool-item").forEach(element => {
-            const row = Number(element.dataset.row);
-            const col = Number(element.dataset.col);
-            const section = Number(element.dataset.section);
-            const value = Number(element.value);
+            // cast to HTMLInputElement so we can access the dataset
+            const htmlElement = element as HTMLInputElement;
 
-            this.squares.push(new Square(row, col, value));
+            // fetch data identifiers from the element
+            const row = Number(htmlElement.dataset.row);
+            const col = Number(htmlElement.dataset.col);
+            const section = Number(htmlElement.dataset.section);
+            const value = Number(htmlElement.value);
+
+            const newSquare = new Square(row, col, value);
+            this.squares.push(newSquare);
+            this.rows.get(row)?.squares.push(newSquare);
+            this.columns.get(col)?.squares.push(newSquare);
+            this.sections.get(section)?.squares.push(newSquare);
 
             // for each square, if it's value is set, remove that value from the list of possibilities 
             // associated with it's row, column, and section
-            if ( element.value ) {
-                this.rows.get(row).removePossibility(value);
-                this.columns.get(col).removePossibility(value);
-                this.sections.get(section).removePossibility(value);
+            if ( htmlElement.value ) {
+                this.rows.get(row)?.removePossibility(value);
+                this.columns.get(col)?.removePossibility(value);
+                this.sections.get(section)?.removePossibility(value);
             }
         });
 
@@ -42,14 +55,14 @@ export class Board {
         });
     }
 
-    solveSquare(square, possibility) {
+    solveSquare(square: Square, possibility: number) {
         // solve the square, setting it's value to this possibility
         square.solve(possibility);
 
         // remove the value from the list of possibilities for corresponding rows, columns, and sections
-        this.rows.get(square.row).removePossibility(square.row, possibility)
-        this.columns.get(square.col).removePossibility(square.col, possibility)
-        this.sections.get(square.section).removePossibility(square.section, possibility)
+        this.rows.get(square.row)?.removePossibility(possibility)
+        this.columns.get(square.col)?.removePossibility(possibility)
+        this.sections.get(square.section)?.removePossibility(possibility)
 
         // remove the value from squares in the same row, col, section
         this.squares.filter(s => s.solved).forEach(solvedSquare => {
@@ -59,9 +72,14 @@ export class Board {
         });
     }
 
-    solveSquareByPosition(row, col, possibility) {
+    solveSquareByPosition(row: number, col: number, possibility: number) {
         const square = this.squares.find(element => element.row === row && element.col === col);
-        this.solveSquare(square, possibility);
+        if ( square ) {
+            this.solveSquare(square, possibility);
+            return;
+        }
+
+        throw new Error(`Unable to solve square with row ${row}, column ${col}`);
     }
 
     solve() {
@@ -71,7 +89,7 @@ export class Board {
     }
 
     getSolution() {
-        const solvedSquares = [];
+        const solvedSquares: Array<string> = [];
         this.squares.forEach(square => {
             solvedSquares.push(square.value ? String(square.value) : "");
         });
@@ -79,10 +97,10 @@ export class Board {
         return solvedSquares;
     }
 
-    solved() {
-        // Has the board been solved?
-        return this.rowList.solved() && this.colList.solved() && this.sectionList.solved();
-    }
+    // solved() {
+    //     // Has the board been solved?
+    //     return this.rows.solved() && this.columns.solved() && this.sections.solved();
+    // }
 
     inconsistent() {
         /* Is the board in an inconsistent state?

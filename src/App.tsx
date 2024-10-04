@@ -1,8 +1,19 @@
 import './App.css';
-import { useState } from 'react';
-import { Board } from './solver/board.js';
+import React, { useState } from 'react';
+import { Board } from './solver/board';
 
-function SudoCoolSquare({ boardSize, rowIndex, colIndex, sectionIndex, squareIndex, squares, prefilledSquares, updateSquare, readOnly }) {
+type SudoCoolSquareProps = {
+    boardSize: number,
+    rowIndex: number,
+    colIndex: number,
+    sectionIndex: number,
+    squareIndex: number,
+    squares: Array<number>,
+    prefilledSquares: Array<number>,
+    updateSquare: Function,
+    readOnly: boolean
+}
+function SudoCoolSquare({ boardSize, rowIndex, colIndex, sectionIndex, squareIndex, squares, prefilledSquares, updateSquare, readOnly } : SudoCoolSquareProps) {
     const [isValid, setIsValid] = useState(true);
 
     const valueIndex = sectionIndex * boardSize + squareIndex;
@@ -35,7 +46,15 @@ function SudoCoolSquare({ boardSize, rowIndex, colIndex, sectionIndex, squareInd
     )
 }
 
-function SudoCoolSection({ boardSize, sectionIndex, squares, prefilledSquares, updateSquare, readOnly }) {
+type SudoCoolSectionProps = {
+    boardSize: number,
+    sectionIndex: number,
+    squares: Array<number>,
+    prefilledSquares: Array<number>,
+    updateSquare: Function,
+    readOnly: boolean
+}
+function SudoCoolSection({ boardSize, sectionIndex, squares, prefilledSquares, updateSquare, readOnly }: SudoCoolSectionProps) {
     const sectionSquares = [];
     for (let squareIndex = 0; squareIndex < boardSize; squareIndex++) {
         const row = 3 * Math.floor(sectionIndex / 3) + Math.floor(squareIndex / 3);
@@ -62,7 +81,14 @@ function SudoCoolSection({ boardSize, sectionIndex, squares, prefilledSquares, u
     )
 }
 
-function SudoCoolBoard({ boardSize, squares, prefilledSquares, updateSquare, readOnly }) {
+type SudoCoolBoardProps = {
+    boardSize: number,
+    squares: Array<number>,
+    prefilledSquares: Array<number>,
+    updateSquare: Function,
+    readOnly: boolean
+}
+function SudoCoolBoard({ boardSize, squares, prefilledSquares, updateSquare, readOnly }: SudoCoolBoardProps) {
     const sections = [];
     for (let sectionIndex = 0; sectionIndex < boardSize; sectionIndex++) {
         sections.push(
@@ -89,10 +115,10 @@ export default function App() {
     const boardSize = 9;
     const [history, setHistory] = useState([Array(boardSize ** 2).fill("")]);
     const [squares, setSquares] = useState(history[0]);
-    const [prefilledSquares, setPrefilledSquares] = useState([]);
+    const [prefilledSquares, setPrefilledSquares] = useState([] as Array<number>);
     const [readOnly, setReadOnly] = useState(false);
 
-    function updateSquare(sectionIndex, squareIndex, value) {
+    function updateSquare(sectionIndex: number, squareIndex: number, value:string) {
         const newSquares = squares.slice();
         newSquares[(sectionIndex * boardSize) + squareIndex] = value;
         setHistory([newSquares]);
@@ -109,7 +135,7 @@ export default function App() {
 
         // calculate the intersection of history[0] and history[1], resulting in the set of squares
         // that were pre-filled, as opposed to having been solved for
-        const prefilled = [];
+        const prefilled: Array<number> = [];
         history[0].forEach((value, index) => {
             if ( value && solvedBoard[index] === value ) {
                 prefilled.push(index);

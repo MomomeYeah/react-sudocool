@@ -4,7 +4,14 @@ export class Square {
     Each square knows what row, column, and section it is in, as well as the
     set of numbers that it could still possibly be set to. */
 
-    constructor(row, col, value) {
+    public row: number;
+    public col: number;
+    public section: number;
+    public value: number | null;
+    public solved: boolean;
+    public possibilities: Array<number>;
+
+    constructor(row: number, col: number, value: number) {
         this.row = row;
         this.col = col;
         this.section = Math.floor(col / 3) + 3 * Math.floor(row / 3);
@@ -16,7 +23,7 @@ export class Square {
         } else {
             this.value = null;
             this.solved = false;
-            this.possibilities = Array(9).fill().map((x, i) => i + 1);
+            this.possibilities = Array(9).fill(0).map((value, index) => index + 1);
         }
     }
 
@@ -30,7 +37,7 @@ export class Square {
             Possibilities: ${this.possibilities.toString()}`;
     }
 
-    removePossibility(possibility) {
+    removePossibility(possibility: number) {
         if (! this.solved ) {
             this.possibilities = this.possibilities.filter(item => item !== possibility);
         }
@@ -38,37 +45,27 @@ export class Square {
 
     // given another square, if that other square is solved, and is in the same row, column, or section
     // as this square, then remove the other square's value from this square's list of possibilities
-    removePossibilityIfConflicting(other) {
-        if ( other.solved ) {
+    removePossibilityIfConflicting(other: Square) {
+        if ( other.solved && other.value ) {
             if ( this.row === other.row || this.col === other.col || this.section === other.section ) {
                 this.removePossibility(other.value);
             }
         }
     }
 
-    removePossibilities(possibilities) {
+    removePossibilities(possibilities: Array<number>) {
         if (! this.solved) {
             this.possibilities = this.possibilities.filter(item => ! possibilities.includes(item));
         }
     }
 
-    solve(possibility) {
+    solve(possibility: number) {
         this.solved = true;
         this.value = possibility;
         this.possibilities = [];
     }
 
-    hasPossibility(possibility) {
+    hasPossibility(possibility: number) {
         return ! this.solved && this.possibilities.includes(possibility)
-    }
-
-    // given another square, return true if:
-    // - the other square shares some or all of this square's possibilities
-    // - the other square does not have exactly the same set of possibilities as this square
-    hasPartialIntersect(square) {
-        const this_set = new Set(this.possibilities);
-        const other_set = new Set(square.possibilities);
-
-        return this_set.difference(other_set).size > 0 && this_set.intersection(other_set).size > 0;
     }
 }

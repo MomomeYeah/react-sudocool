@@ -1,8 +1,8 @@
 # UI
 
 - Dynamically set board size via the UI
-- Switch to TS instead of JS
 - Implement additional solving functions
+- Convenience buttons to populate easy / medium / hard puzzles
 
 # Additional Features
 
