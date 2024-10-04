@@ -1,143 +1,151 @@
 html * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 body {
-  background-color: lightgrey;
-  width: 100%;
-  margin: 0;
-
-  /* cap content width at 1000px */
-  --padding-total: calc(100% - 1000px);
-  padding-left: calc(var(--padding-total) / 2);
-  padding-right: calc(var(--padding-total) / 2);
-
-  /* use full height of page */
-  min-height: 100vh;
-
-  /* display flex to enable content to flex-grow as needed */
-  display: flex;
-  flex-direction: column;
-
-  /* standard light / dark colors */
-  --color-dark: #333333;
-  --color-light: white;
+    background-color: lightgrey;
+    width: 100%;
+    margin: 0;
+    
+    /* cap content width at 1000px */
+    --padding-total: calc(100% - 1000px);
+    padding-left: calc(var(--padding-total) / 2);
+    padding-right: calc(var(--padding-total) / 2);
+    
+    /* use full height of page */
+    min-height: 100vh;
+    
+    /* display flex to enable content to flex-grow as needed */
+    display: flex;
+    flex-direction: column;
+    
+    /* standard light / dark colors */
+    --color-dark: #333333;
+    --color-light: white;
 }
 
 /* nav bar with clickable link to return to homepage */
 nav.title {
-  background-color: var(--color-dark);
-  color: var(--color-light);
-  padding: 1em 2em;
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    padding: 1em 2em;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 nav.title h1 {
-  margin: 0;
-  padding: 0;
-  font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
-  font-style: normal;
-  font-weight: normal;
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+}
+nav.title img {
+    width: 40px;
+    height: 40px;
 }
 
 /* any input/link/etc. for performing an action */
 .button {
-  background-color: var(--color-dark);
-  color: var(--color-light);
-
-  font-size: 1em;
-
-  padding: 1em 2em;
-  margin: 0 1em;
-  border: 1px solid var(--color-dark);
-  border-radius: 0;
-  width: 10em;
-
-  cursor: pointer;
-  text-decoration: none;
-  font-family: Arial;
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    
+    font-size: 1em;
+    
+    padding: 1em 2em;
+    margin: 0 1em;
+    border: 1px solid var(--color-dark);
+    border-radius: 0;
+    width: 10em;
+    
+    cursor: pointer;
+    text-decoration: none;
+    font-family: Arial;
 }
 
 /* wrapper for all page content, growing to full document height */
 #root {
-  background-color: var(--color-light);
-
-  padding: 1em 0;
-  width: 100%;
-
-  flex-grow: 1;
+    background-color: var(--color-light);
+    
+    padding: 1em 0;
+    width: 100%;
+    
+    flex-grow: 1;
 }
 
 /* center sudocool board in main element */
 div.sudocool-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Pure CSS aspect ratio: https://codepen.io/ItScofield/pen/PNVZoQ */
 div.sudocool-table-wrapper {
-  /* relative-positioned so child can be absolute, set to desired width */
-  position: relative;
-  width: min(100%, 740px);
-  min-width: 380px;
-  margin-bottom: 1em;
+    /* relative-positioned so child can be absolute, set to desired width */
+    position: relative;
+    width: min(100%, 740px);
+    min-width: 380px;
+    margin-bottom: 1em;
 }
 div.sudocool-table-wrapper::before {
-  /* set padding-top to 100%, meaning 100% of parent width */
-  /* this gives us a 1:1 aspect ratio */
-  content: "";
-  display: block;
-  padding-top: 100%;
+    /* set padding-top to 100%, meaning 100% of parent width */
+    /* this gives us a 1:1 aspect ratio */
+    content: "";
+    display: block;
+    padding-top: 100%;
 }
 
 div.sudocool-table {
-  /* dark background to serve as grid lines */
-  background-color: var(--color-dark);
-
-  /* set up grid container with 9 rows / columns */
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-
-  /* set space between grid boxes */
-  --content-spacing: 2px;
-  column-gap: var(--content-spacing);
-  row-gap: var(--content-spacing);
-  padding: var(--content-spacing);
-
-  /* use absolute positioning to counteract parent padding */
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+    /* dark background to serve as grid lines */
+    background-color: var(--color-dark);
+    
+    /* set up grid container with 9 rows / columns */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    
+    /* set space between grid boxes */
+    --content-spacing: 2px;
+    column-gap: var(--content-spacing);
+    row-gap: var(--content-spacing);
+    padding: var(--content-spacing);
+    
+    /* use absolute positioning to counteract parent padding */
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 div.sudocool-section {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
 }
 
 /* make each input element a perfect square, taking up all available space */
 input.sudocool-item {
-  border: 1px solid var(--color-dark);
-  padding: 0;
-  margin: 0;
-
-  height: 100%;
-  width: 100%;
-
-  text-align: center;
-  font-size: 1.5em;
+    border: 1px solid var(--color-dark);
+    padding: 0;
+    margin: 0;
+    
+    height: 100%;
+    width: 100%;
+    
+    text-align: center;
+    font-size: 1.5em;
 }
 
 input.sudocool-item.prefilled {
-  background-color: lightgrey;
+    background-color: lightgrey;
 }
 
 /* give invalid input a red border */
 input.sudocool-item.invalid {
-  background-color: IndianRed;
-  color: white;
+    background-color: IndianRed;
+    color: white;
 }
 
