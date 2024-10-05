@@ -152,6 +152,41 @@ export default function App() {
         setPrefilledSquares([]);
     }
 
+    // empty the board, returning it to a pristine state
+    function handleClickClear() {
+        setHistory([Array(boardSize ** 2).fill("")]);
+        setSquares(Array(boardSize ** 2).fill(""));
+        setReadOnly(false);
+        setPrefilledSquares([] as Array<number>);
+    }
+
+    function populateBoard(squareArray: Array<string>) {
+        setHistory([squareArray]);
+        setSquares(squareArray);
+        setReadOnly(false);
+        setPrefilledSquares([] as Array<number>);
+    }
+
+    function populateEasy() {
+        const squareArray = ['', '', '', '7', '', '5', '', '8', '2', '', '', '1', '6', '3', '', '', '9', '', '', '', '8', '2', '', '', '6', '3', '', '', '7', '', '', '1', '', '4', '6', '3', '', '', '4', '', '', '', '8', '', '', '5', '8', '3', '', '9', '', '', '7', '', '', '2', '7', '', '', '4', '6', '', '', '', '1', '', '', '8', '7', '5', '', '', '3', '4', '', '9', '', '1', '', '', ''];
+        populateBoard(squareArray);
+    }
+
+    function populateMedium() {
+        const squareArray = ['', '', '5', '4', '', '', '', '1', '', '7', '', '9', '1', '', '8', '', '', '', '1', '', '', '', '', '3', '', '2', '', '', '6', '', '', '', '7', '', '4', '', '9', '1', '2', '', '', '', '8', '7', '6', '', '4', '', '8', '', '', '', '9', '', '', '5', '', '6', '', '', '', '', '9', '', '', '', '3', '', '4', '6', '', '1', '', '3', '', '', '', '7', '2', '', ''];
+        populateBoard(squareArray);
+    }
+
+    function populateHard() {
+        const squareArray = ['4', '', '2', '', '', '', '', '5', '1', '', '', '', '2', '', '9', '', '', '', '', '', '', '', '7', '', '6', '', '', '', '', '', '', '6', '', '9', '', '', '', '9', '', '7', '', '1', '', '4', '', '', '', '4', '', '3', '', '', '', '', '', '', '3', '', '7', '', '', '', '', '', '', '', '6', '', '8', '', '', '', '2', '5', '', '', '', '', '1', '', '7'];
+        populateBoard(squareArray);
+    }
+
+    function populateTough() {
+        const squareArray = ['', '', '', '', '3', '', '', '', '7', '', '', '8', '4', '', '', '', '2', '', '', '', '', '', '', '5', '4', '', '', '', '', '2', '', '4', '', '', '', '6', '', '', '1', '', '7', '', '5', '', '', '7', '', '', '', '8', '', '1', '', '', '', '', '1', '7', '', '', '', '', '', '', '4', '', '', '', '9', '3', '', '', '9', '', '', '', '2', '', '', '', ''];
+        populateBoard(squareArray);
+    }
+
     return (
         <div className="sudocool-container">
             <SudoCoolBoard
@@ -160,9 +195,16 @@ export default function App() {
                 prefilledSquares={prefilledSquares}
                 updateSquare={updateSquare}
                 readOnly={readOnly} />
-            <div>
+            <div className="buttonGroup">
                 <input type="button" value="Solve" className="button" onClick={handleClickSubmit}/>
                 <input type="button" value="Reset" className="button" onClick={handleClickReset}/>
+                <input type="button" value="Clear" className="button" onClick={handleClickClear}/>
+            </div>
+            <div className="buttonGroup">
+                <input type="button" value="Easy" className="button" onClick={populateEasy}/>
+                <input type="button" value="Medium" className="button" onClick={populateMedium}/>
+                <input type="button" value="Hard" className="button" onClick={populateHard}/>
+                <input type="button" value="Tough" className="button" onClick={populateTough}/>
             </div>
         </div>
     );

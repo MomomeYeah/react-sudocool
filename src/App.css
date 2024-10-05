@@ -45,7 +45,9 @@ nav.title img {
     height: 40px;
 }
 
-/* any input/link/etc. for performing an action */
+.buttonGroup {
+    margin-bottom: 1em;
+}
 .button {
     background-color: var(--color-dark);
     color: var(--color-light);
