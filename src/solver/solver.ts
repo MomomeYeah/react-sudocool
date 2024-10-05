@@ -1,3 +1,4 @@
+import { Row, Column } from './squareSet';
 import { Board } from './board';
 
 export class Solver {
@@ -17,7 +18,8 @@ export class Solver {
                 // many medium puzzles
                 this.singleCandidate()
                 || this.singlePosition()
-            // found = this.candidateLine()
+                // candidateLine helps for hard / tough puzzles
+                || this.candidateLine()
             // found = this.doublePair()
             // found = this.nakedTuples()
         }
@@ -67,5 +69,51 @@ export class Solver {
         });
 
         return found;
+    }
+
+    candidateLine() {
+        /* Remove possibilities based on candidate line test.
+
+        For each possibility in each section, look at all cells in that section
+        containing that possibility. If all such cells fall on a single row or
+        column, that row or column in that section must contain that possibility.
+        Therefore, we can remove that possibility from cells in the same row or
+        column in other sections */
+
+        let found = false
+        this.board.sections.forEach((section, sectionIndex) => {
+            section.possibilities.forEach(possibility => {
+                // get all squares in this section containing this possibility
+                const squaresWithPossibility = section.squares.filter(square => square.possibilities.includes(possibility));
+
+                // if they all fall on a single row, then remove the possibility
+                // from all other squares in the same row in different sections
+                const rows = new Set(squaresWithPossibility.map(square => square.row));
+                if ( rows.size === 1 ) {
+                    const rowIndex = rows.values().next().value as number;
+                    const row = this.board.rows.get(rowIndex) as Row;
+                    const removeSquares = row.squares.filter(square => square.section !== sectionIndex && square.hasPossibility(possibility));
+                    if ( removeSquares.length > 0 ) {
+                        found = true;
+                        removeSquares.map(square => square.removePossibility(possibility));
+                    }
+                }
+
+                // if they all fall on a single column, then remove the possibility
+                // from all other squares in the same column in different sections
+                const cols = new Set(squaresWithPossibility.map(square => square.col));
+                if ( cols.size === 1 ) {
+                    const colIndex = cols.values().next().value as number;
+                    const col = this.board.columns.get(colIndex) as Column;
+                    const removeSquares = col.squares.filter(square => square.section !== sectionIndex && square.hasPossibility(possibility));
+                    if ( removeSquares.length > 0 ) {
+                        found = true;
+                        removeSquares.map(square => square.removePossibility(possibility));
+                    }
+                }
+            });
+        });
+
+        return found
     }
 }

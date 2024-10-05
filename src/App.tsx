@@ -127,6 +127,10 @@ export default function App() {
 
     // submit the board for solving
     function handleClickSubmit() {
+        // if the board is already solved, don't attempt to re-solve
+        if ( readOnly ) return;
+
+        // otherwise, we're good to go
         const board = new Board();
         const solvedBoard = board.solve();;
         setHistory([...history, solvedBoard]);
