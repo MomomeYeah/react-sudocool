@@ -53,7 +53,7 @@ export class Solver {
             // for each row, column, or section
             collection.forEach(collection_item => {
                 // for each possibility remaining in the row / column / section
-                collection_item.possibilities.forEach((possibility: number) => {
+                collection_item.possibilities.forEach(possibility => {
                     // find all other squares in the same row, column, or section with that possibility also remaining
                     const squaresWithPossibility = collection_item.squares.filter(square => square.possibilities.includes(possibility));
                     // if there is only one such square. solve the square
