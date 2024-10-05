@@ -12,16 +12,14 @@ export class Solver {
     solve() {
         let found = true
         while (found) {
-            found = false
             found = 
-                // singleCandidate and singlePosition alone are enough to solve easy and 
-                // many medium puzzles
+                // the following alone are enough to solve easy and many medium puzzles
                 this.singleCandidate()
                 || this.singlePosition()
-                // candidateLine helps for hard / tough puzzles
+                // the following help for hard / tough puzzles
                 || this.candidateLine()
+                || this.nakedTuples()
             // found = this.doublePair()
-            // found = this.nakedTuples()
         }
     }
 
@@ -53,7 +51,7 @@ export class Solver {
         ];
         collections.forEach(collection => {
             // for each row, column, or section
-            collection.forEach((collection_item, key) => {
+            collection.forEach(collection_item => {
                 // for each possibility remaining in the row / column / section
                 collection_item.possibilities.forEach((possibility: number) => {
                     // find all other squares in the same row, column, or section with that possibility also remaining
@@ -111,6 +109,57 @@ export class Solver {
                         removeSquares.map(square => square.removePossibility(possibility));
                     }
                 }
+            });
+        });
+
+        return found
+    }
+
+    nakedTuples() {
+        /* Remove possibilities based on naked tuples test.
+
+        For each row / col / section, if any N squares have exactly the same N
+        possibilities, then only those N squares in that row / col / section can
+        contain those N possibilities.
+
+        For example, if 2 squares in the same section each have only 2 possibilities
+        and those possibilities are the same, no other squares in that section can
+        have either possibility, so remove those 2 possibilities from all other
+        squares in that section */
+
+        let found = false;
+        const collections = [
+            this.board.rows,
+            this.board.columns,
+            this.board.sections
+        ];
+        collections.forEach(collection => {
+            // for every row, column, or section
+            collection.forEach(collection_item => {
+                // for each unsolved square in the row, column, or section
+                const unsolvedSquares = collection_item.squares.filter(square => ! square.solved);
+                unsolvedSquares.forEach(unsolvedSquare => {
+                    // get the list of squares in the same row, column, or section that have
+                    // an identical set of possibilities
+                    const squaresSharingPossibilities = collection_item.squares.filter(square => {
+                        return ! square.solved && square.hasIdenticalPossibilities(unsolvedSquare);
+                    });
+                    // if the number of squares sharing the set of possibilities is the same as
+                    // the number of possibilities, then remove all those possibilities from all
+                    // other squares in the same row, column, or section
+                    if ( squaresSharingPossibilities.length === unsolvedSquare.possibilities.length ) {
+                        const removeSquares = collection_item.squares.filter(square => {
+                            return ! squaresSharingPossibilities.includes(square)
+                                && ! square.solved
+                                && square.shareAnyPossibilities(unsolvedSquare);
+                        });
+
+                        if ( removeSquares.length > 0 ) {
+                            found = true;
+                            removeSquares.map(square => square.removePossibilities(unsolvedSquare.possibilities));
+                        }
+                    }
+                });
             });
         });
 

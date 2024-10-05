@@ -68,4 +68,26 @@ export class Square {
     hasPossibility(possibility: number) {
         return ! this.solved && this.possibilities.includes(possibility)
     }
+
+    shareAnyPossibilities(other: Square) {
+        // if any of this square's possibilities exist in the other, return true
+        const matchingInOther = this.possibilities.filter(possibility => other.possibilities.includes(possibility));
+        if ( matchingInOther.length > 0 ) return true;
+
+        // no overlap, return false
+        return false
+    }
+
+    hasIdenticalPossibilities(other: Square) {
+        // if any of this square's possibilities don't exist im the other, return false
+        const missingFromOther = this.possibilities.filter(possibility => ! other.possibilities.includes(possibility));
+        if ( missingFromOther.length > 0 ) return false;
+        
+        // if any of the other square's possibilities don't exist in this, return false
+        const missingFromThis = other.possibilities.filter(possibility => ! this.possibilities.includes(possibility));
+        if ( missingFromThis.length > 0 ) return false;
+
+        // possibilities are the same, return true
+        return true;
+    }
 }
