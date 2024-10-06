@@ -103,7 +103,7 @@ div.sudocool-table {
     /* dark background to serve as grid lines */
     background-color: var(--color-dark);
     
-    /* set up grid container with 9 rows / columns */
+    /* set up grid container with rows / columns */
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);

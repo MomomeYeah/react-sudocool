@@ -186,11 +186,6 @@ export default function App() {
         populateBoard(squareArray);
     }
 
-    function populateTough() {
-        const squareArray = ['', '', '', '', '3', '', '', '', '7', '', '', '8', '4', '', '', '', '2', '', '', '', '', '', '', '5', '4', '', '', '', '', '2', '', '4', '', '', '', '6', '', '', '1', '', '7', '', '5', '', '', '7', '', '', '', '8', '', '1', '', '', '', '', '1', '7', '', '', '', '', '', '', '4', '', '', '', '9', '3', '', '', '9', '', '', '', '2', '', '', '', ''];
-        populateBoard(squareArray);
-    }
-
     return (
         <div className="sudocool-container">
             <SudoCoolBoard
@@ -208,7 +203,6 @@ export default function App() {
                 <input type="button" value="Easy" className="button" onClick={populateEasy}/>
                 <input type="button" value="Medium" className="button" onClick={populateMedium}/>
                 <input type="button" value="Hard" className="button" onClick={populateHard}/>
-                <input type="button" value="Tough" className="button" onClick={populateTough}/>
             </div>
         </div>
     );

@@ -19,7 +19,6 @@ export class Solver {
                 // the following help for hard / tough puzzles
                 || this.candidateLine()
                 || this.nakedTuples()
-            // found = this.doublePair()
         }
     }
 

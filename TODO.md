@@ -1,6 +1,6 @@
 # UI
 
-- Implement additional solving functions
+- Implement hidden pairs solving function
 - Dynamically set board size via the UI
 - show solve success / fail via UI
 - indicate inconsistency if it exists
