@@ -38,9 +38,7 @@ export class Square {
     }
 
     removePossibility(possibility: string) {
-        if (! this.solved ) {
-            this.possibilities = this.possibilities.filter(item => item !== possibility);
-        }
+        this.possibilities = this.possibilities.filter(item => item !== possibility);
     }
 
     // given another square, if that other square is solved, and is in the same row, column, or section
@@ -54,9 +52,7 @@ export class Square {
     }
 
     removePossibilities(possibilities: Array<string>) {
-        if (! this.solved) {
-            this.possibilities = this.possibilities.filter(item => ! possibilities.includes(item));
-        }
+        this.possibilities = this.possibilities.filter(item => ! possibilities.includes(item));
     }
 
     solve(possibility: string) {
@@ -66,7 +62,7 @@ export class Square {
     }
 
     hasPossibility(possibility: string) {
-        return ! this.solved && this.possibilities.includes(possibility)
+        return ! this.solved && this.possibilities.includes(possibility);
     }
 
     shareAnyPossibilities(other: Square) {

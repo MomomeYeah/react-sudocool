@@ -50,7 +50,7 @@ nav.title img {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    align-items: center;
+    align-items: stretch;
     width: min(100%, 740px);
 }
 .button {
@@ -62,7 +62,7 @@ nav.title img {
     padding: 1em 2em;
     border: 1px solid var(--color-dark);
     border-radius: 0;
-    width: 10em;
+    width: 30%;
     
     cursor: pointer;
     text-decoration: none;
@@ -75,8 +75,8 @@ nav.title img {
     
     box-sizing: border-box;
     font-size: 1em;
-    height: 3em;
-    width: 10em;
+    height: 3.3em;
+    width: 30%;
 }
 
 /* wrapper for all page content, growing to full document height */
@@ -133,15 +133,15 @@ div.sudocool-table {
     bottom: 0;
     right: 0;
 }
-div.sudocool-table-2x2 {
+div.sudocool-table-4 {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
 }
-div.sudocool-table-3x3 {
+div.sudocool-table-9 {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
 }
-div.sudocool-table-4x4 {
+div.sudocool-table-16 {
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(4, 1fr);
 }
@@ -149,15 +149,15 @@ div.sudocool-table-4x4 {
 div.sudocool-section {
     display: grid;
 }
-div.sudocool-section-2x2 {
+div.sudocool-section-4 {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
 }
-div.sudocool-section-3x3 {
+div.sudocool-section-9 {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
 }
-div.sudocool-section-4x4 {
+div.sudocool-section-16 {
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(4, 1fr);
 }

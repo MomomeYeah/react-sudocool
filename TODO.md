@@ -1,7 +1,6 @@
 # UI
 
-- refactor state-setting functions more nicely
-- combine easy / medium / hard into single dropdown?
+- switching to 16x16 makes the board cover the first row of buttons on mobile
 - clear doesn't remove invalid cell styles
 - show solve success / fail via UI
 - indicate inconsistency if it exists
