@@ -2,19 +2,19 @@ export class Square {
     /* Class representing a single square on the Sudoku board.
 
     Each square knows what row, column, and section it is in, as well as the
-    set of numbers that it could still possibly be set to. */
+    set of values that it could still possibly be set to. */
 
     public row: number;
     public col: number;
     public section: number;
-    public value: number | null;
+    public value: string | null;
     public solved: boolean;
-    public possibilities: Array<number>;
+    public possibilities: Array<string>;
 
-    constructor(row: number, col: number, value: number) {
+    constructor(row: number, col: number, section: number, defaultPossibilities: Array<string>, value: string) {
         this.row = row;
         this.col = col;
-        this.section = Math.floor(col / 3) + 3 * Math.floor(row / 3);
+        this.section = section;
 
         if (value) {
             this.value = value;
@@ -23,7 +23,7 @@ export class Square {
         } else {
             this.value = null;
             this.solved = false;
-            this.possibilities = Array(9).fill(0).map((value, index) => index + 1);
+            this.possibilities = defaultPossibilities.slice();
         }
     }
 
@@ -37,7 +37,7 @@ export class Square {
             Possibilities: ${this.possibilities.toString()}`;
     }
 
-    removePossibility(possibility: number) {
+    removePossibility(possibility: string) {
         if (! this.solved ) {
             this.possibilities = this.possibilities.filter(item => item !== possibility);
         }
@@ -53,19 +53,19 @@ export class Square {
         }
     }
 
-    removePossibilities(possibilities: Array<number>) {
+    removePossibilities(possibilities: Array<string>) {
         if (! this.solved) {
             this.possibilities = this.possibilities.filter(item => ! possibilities.includes(item));
         }
     }
 
-    solve(possibility: number) {
+    solve(possibility: string) {
         this.solved = true;
         this.value = possibility;
         this.possibilities = [];
     }
 
-    hasPossibility(possibility: number) {
+    hasPossibility(possibility: string) {
         return ! this.solved && this.possibilities.includes(possibility)
     }
 

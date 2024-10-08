@@ -2,6 +2,8 @@
 
 A React-based Suduku solver - the name is a very clever pun.
 
+https://sudocool.com
+
 ## Available Scripts
 
 In the project directory, you can run:

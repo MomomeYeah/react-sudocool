@@ -5,19 +5,23 @@ import { Solver } from './solver';
 export class Board {
     /* Class representing the Sudoku board */
 
+    public boardSize: number;
     public rows: Map<number, Row>;
     public columns: Map<number, Column>;
     public sections: Map<number, Section>;
     public squares: Array<Square>;
 
-    constructor() {
+    constructor(boardSize: number) {
+        this.boardSize = boardSize;
+        const defaultPossibilities = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G"].slice(0, this.boardSize);
+
         this.rows = new Map();
         this.columns = new Map();
         this.sections = new Map();
-        for (let i = 0; i < 9; i++) {
-            this.rows.set(i, new Row());
-            this.columns.set(i, new Column());
-            this.sections.set(i, new Section());
+        for (let i = 0; i < this.boardSize; i++) {
+            this.rows.set(i, new Row(defaultPossibilities));
+            this.columns.set(i, new Column(defaultPossibilities));
+            this.sections.set(i, new Section(defaultPossibilities));
         }
 
         this.squares = [];
@@ -29,9 +33,9 @@ export class Board {
             const row = Number(htmlElement.dataset.row);
             const col = Number(htmlElement.dataset.col);
             const section = Number(htmlElement.dataset.section);
-            const value = Number(htmlElement.value);
+            const value = htmlElement.value;
 
-            const newSquare = new Square(row, col, value);
+            const newSquare = new Square(row, col, section, defaultPossibilities, value);
             this.squares.push(newSquare);
             this.rows.get(row)?.squares.push(newSquare);
             this.columns.get(col)?.squares.push(newSquare);
@@ -55,7 +59,7 @@ export class Board {
         });
     }
 
-    solveSquare(square: Square, possibility: number) {
+    solveSquare(square: Square, possibility: string) {
         // solve the square, setting it's value to this possibility
         square.solve(possibility);
 
@@ -72,7 +76,7 @@ export class Board {
         });
     }
 
-    solveSquareByPosition(row: number, col: number, possibility: number) {
+    solveSquareByPosition(row: number, col: number, possibility: string) {
         const square = this.squares.find(element => element.row === row && element.col === col);
         if ( square ) {
             this.solveSquare(square, possibility);

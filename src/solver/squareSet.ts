@@ -3,11 +3,11 @@ import { Square } from './square';
 class SquareSet {
     /* Class representing a row, column, or section on a Sudoku board */
 
-    public possibilities: Array<number>;
+    public possibilities: Array<string>;
     public squares: Array<Square>;
 
-    constructor() {
-        this.possibilities = Array(9).fill(0).map((value, index) => index + 1);
+    constructor(defaultPossibilities: Array<string>) {
+        this.possibilities = defaultPossibilities.slice();
         this.squares = [];
     }
 
@@ -15,7 +15,7 @@ class SquareSet {
         return this.possibilities.length === 0
     }
 
-    removePossibility(possibility: number) {
+    removePossibility(possibility: string) {
         this.possibilities = this.possibilities.filter(item => item !== possibility);
     }
 }

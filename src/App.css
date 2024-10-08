@@ -47,6 +47,11 @@ nav.title img {
 
 .buttonGroup {
     margin-bottom: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: min(100%, 740px);
 }
 .button {
     background-color: var(--color-dark);
@@ -55,7 +60,6 @@ nav.title img {
     font-size: 1em;
     
     padding: 1em 2em;
-    margin: 0 1em;
     border: 1px solid var(--color-dark);
     border-radius: 0;
     width: 10em;
@@ -63,6 +67,16 @@ nav.title img {
     cursor: pointer;
     text-decoration: none;
     font-family: Arial;
+}
+.selector {
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    text-align: center;
+    
+    box-sizing: border-box;
+    font-size: 1em;
+    height: 3em;
+    width: 10em;
 }
 
 /* wrapper for all page content, growing to full document height */
@@ -105,8 +119,6 @@ div.sudocool-table {
     
     /* set up grid container with rows / columns */
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
     
     /* set space between grid boxes */
     --content-spacing: 2px;
@@ -121,11 +133,33 @@ div.sudocool-table {
     bottom: 0;
     right: 0;
 }
+div.sudocool-table-2x2 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+div.sudocool-table-3x3 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+div.sudocool-table-4x4 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+}
 
 div.sudocool-section {
     display: grid;
+}
+div.sudocool-section-2x2 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+div.sudocool-section-3x3 {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
+}
+div.sudocool-section-4x4 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
 }
 
 /* make each input element a perfect square, taking up all available space */
