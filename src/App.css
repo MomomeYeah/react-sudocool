@@ -95,6 +95,7 @@ div.sudocool-container {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    min-width: 480px;
 }
 
 /* Pure CSS aspect ratio: https://codepen.io/ItScofield/pen/PNVZoQ */
@@ -102,7 +103,6 @@ div.sudocool-table-wrapper {
     /* relative-positioned so child can be absolute, set to desired width */
     position: relative;
     width: min(100%, 740px);
-    min-width: 380px;
     margin-bottom: 1em;
 }
 div.sudocool-table-wrapper::before {
