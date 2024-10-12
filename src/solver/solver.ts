@@ -59,7 +59,7 @@ export class Solver {
                     if ( squaresWithPossibility.length === 1 ) {
                         found = true;
                         const square = squaresWithPossibility[0];
-                        this.board.solveSquareByPosition(square.row, square.col, possibility);
+                        this.board.solveSquare(square, possibility);
                     }
                 });
             });

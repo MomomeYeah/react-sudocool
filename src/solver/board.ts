@@ -6,24 +6,40 @@ export class Board {
     /* Class representing the Sudoku board */
 
     public boardSize: number;
+    public validPossibilities: Array<string>;
     public rows: Map<number, Row>;
     public columns: Map<number, Column>;
     public sections: Map<number, Section>;
     public squares: Array<Square>;
 
+    // return values
+    public solution: Array<string>;
+    public solved: boolean;
+    public prefilledSquares: Array<number>;
+    public invalid: boolean;
+    public invalidSquares: Array<number>;
+
     constructor(boardSize: number) {
         this.boardSize = boardSize;
-        const defaultPossibilities = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G"].slice(0, this.boardSize);
+        this.validPossibilities = "123456789ABCDEFG".split("").slice(0, this.boardSize);
 
+        // initialise return values to their defaults
+        this.solution = [];
+        this.solved = false;
+        this.invalid = false;
+        this.invalidSquares = [];
+
+        // initialise rows, columns, and sections
         this.rows = new Map();
         this.columns = new Map();
         this.sections = new Map();
         for (let i = 0; i < this.boardSize; i++) {
-            this.rows.set(i, new Row(defaultPossibilities));
-            this.columns.set(i, new Column(defaultPossibilities));
-            this.sections.set(i, new Section(defaultPossibilities));
+            this.rows.set(i, new Row(this.validPossibilities));
+            this.columns.set(i, new Column(this.validPossibilities));
+            this.sections.set(i, new Section(this.validPossibilities));
         }
 
+        // initialise all board squares, and read their values
         this.squares = [];
         document.querySelectorAll(".sudocool-item").forEach(element => {
             // cast to HTMLInputElement so we can access the dataset
@@ -35,7 +51,7 @@ export class Board {
             const section = Number(htmlElement.dataset.section);
             const value = htmlElement.value;
 
-            const newSquare = new Square(row, col, section, defaultPossibilities, value);
+            const newSquare = new Square(row, col, section, this.validPossibilities, value);
             this.squares.push(newSquare);
             this.rows.get(row)?.squares.push(newSquare);
             this.columns.get(col)?.squares.push(newSquare);
@@ -50,13 +66,23 @@ export class Board {
             }
         });
 
-        // finally, loop over all squares, removing possibilities corresponding to solved squares in the 
-        // same row, column, or section
-        this.squares.filter(s => s.solved).forEach(solvedSquare => {
-            this.squares.forEach(square => {
-                square.removePossibilityIfConflicting(solvedSquare);
-            });
+        this.prefilledSquares = [];
+        // finally loop over all squares
+        this.squares.forEach((square, index) => {
+            // for each square, if it's solved
+            if ( square.solved ) {
+                // add it to the list of squares that were filled in before solving
+                this.prefilledSquares.push(index);
+
+                // remove possibilities corresponding to solved squares in the same row, column, or section
+                this.squares.forEach(unsolved_square => {
+                    unsolved_square.removePossibilityIfConflicting(square);
+                });    
+            }
         });
+
+        // attempt to solve the board
+        this.solve();
     }
 
     solveSquare(square: Square, possibility: string) {
@@ -76,43 +102,64 @@ export class Board {
         });
     }
 
-    solveSquareByPosition(row: number, col: number, possibility: string) {
-        const square = this.squares.find(element => element.row === row && element.col === col);
-        if ( square ) {
-            this.solveSquare(square, possibility);
+    solve() {
+        // first check to see if the board is valid
+        let invalidSquares = this.getInvalidSquares();
+        if ( invalidSquares.length > 0 ) {
+            this.solution = this.squares.map(square => square.value ?? "");
+            this.solved = false;
+            this.invalid = true;
+            this.invalidSquares = invalidSquares;
+
+            // return early without attempting to solve
             return;
         }
 
-        throw new Error(`Unable to solve square with row ${row}, column ${col}`);
-    }
-
-    solve() {
+        // attempt to solve the board
         const solver = new Solver(this);
         solver.solve();
-        return this.getSolution();
+
+        // populate board solution, either partial or complete
+        this.solution = this.squares.map(square => square.value ?? "");
+
+        // check again to make sure the results is valid and consistent
+        invalidSquares = this.getInvalidSquares();
+        if ( invalidSquares.length > 0 ) {
+            this.solved = false;
+            this.invalid = true;
+            this.invalidSquares = invalidSquares;
+        } else {
+            this.solved = this.getIsSolved();
+            this.invalid = false;
+        }
     }
 
-    getSolution() {
-        const solvedSquares: Array<string> = [];
-        this.squares.forEach(square => {
-            solvedSquares.push(square.value ? String(square.value) : "");
+    getIsSolved() {
+        /** Has the board been solved?
+         * 
+         * The board has been solved if all squares have been solved
+         */
+        return this.squares.filter(square => ! square.solved).length === 0;
+    }
+
+    getInvalidSquares() {
+        /** Is the board invalid? The board is invalid if:
+         * 
+         * - any squares have invalid characters
+         * - TODO any squares that are in the same row, col, or section as squares with the same value
+         * - any squares remain unsolved but have no remaining possibilities
+         */
+        const invalidSquares = [] as Array<number>;
+        this.squares.forEach((square, index) => {
+            // invalid characters
+            if ( square.value && ! this.validPossibilities.includes(square.value) ) {
+                invalidSquares.push(index);
+            // no remaining possibilities
+            } else if ( ! square.solved && square.possibilities.length === 0 ) {
+                invalidSquares.push(index);
+            }
         });
 
-        return solvedSquares;
-    }
-
-    // solved() {
-    //     // Has the board been solved?
-    //     return this.rows.solved() && this.columns.solved() && this.sections.solved();
-    // }
-
-    inconsistent() {
-        /* Is the board in an inconsistent state?
-
-        The board is in an inconsistent state if there remain any squares that have
-        no possibilities left but that haven't been marked as solved */
-
-        const unsolved_squares = this.squares.filter(square => ! square.solved && square.possibilities.length === 0);
-        return unsolved_squares.length > 0;
+        return invalidSquares;
     }
 }
