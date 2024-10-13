@@ -1,7 +1,7 @@
 # UI
 
 - calculate row / col / section in board, rather than tracking via data attrs?
-- show invalid squares due to duplicates in row / col / section
+    - consider moving context back to props, fully or partially
 - show steps to solve in the UI
 - implement tests
 - Implement hidden pairs solving function

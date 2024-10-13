@@ -18,6 +18,17 @@ class SquareSet {
     removePossibility(possibility: string) {
         this.possibilities = this.possibilities.filter(item => item !== possibility);
     }
+
+    containsClashesWith(square: Square) {
+        // if the given square isn't contained in this set, no clash exists
+        if ( ! this.squares.includes(square) ) return false;
+
+        // if the given square isn't solved, no clash exists
+        if ( ! square.solved ) return false;
+
+        // a clash exists if multiple solved squares exist in this set that have the same value
+        return this.squares.filter(squareInSet => squareInSet.solved && squareInSet.value === square.value).length > 1;
+    }
 }
 
 export class Row extends SquareSet {};

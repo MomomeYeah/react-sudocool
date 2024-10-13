@@ -1,6 +1,14 @@
 import './App.css';
-import React, { useState } from 'react';
-import { Board } from './solver/board';
+import React, { createContext, useContext, useState } from 'react';
+import { BoardSolutionType, Board } from './solver/board';
+
+type BoardContextProps = {
+    boardSize: number,
+    squares: Array<string>,
+    solution: BoardSolutionType | null,
+    updateSquare: Function
+}
+const BoardContext = createContext({} as BoardContextProps);
 
 type SudoCoolSquareProps = {
     row: number,
@@ -9,46 +17,40 @@ type SudoCoolSquareProps = {
     value: string,
     prefilled: boolean,
     invalid: boolean,
-    squareIndex: number,
-    updateSquare: Function,
-    readOnly: boolean
+    squareIndex: number
 }
-function SudoCoolSquare({ row, col, section, value, prefilled, invalid, squareIndex, updateSquare, readOnly } : SudoCoolSquareProps) {
+function SudoCoolSquare({ row, col, section, value, prefilled, invalid, squareIndex } : SudoCoolSquareProps) {
+    const context = useContext(BoardContext);
     const className = `sudocool-item ${invalid ? "invalid" : ""} ${prefilled ? "prefilled" : ""}`;
     return (
         <input
             className={className}
-            readOnly={readOnly}
+            readOnly={context.solution != null}
             data-row={row}
             data-col={col}
             data-section={section}
             value={value}
-            onChange={(e) => updateSquare(section, squareIndex, e.target.value)} />
+            onChange={(e) => context.updateSquare(section, squareIndex, e.target.value)} />
     )
 }
 
 type SudoCoolSectionProps = {
-    boardSize: number,
-    sectionIndex: number,
-    squares: Array<string>,
-    prefilledSquares: Array<number>,
-    invalidSquares: Array<number>,
-    updateSquare: Function,
-    readOnly: boolean
+    sectionIndex: number
 }
-function SudoCoolSection({ boardSize, sectionIndex, squares, prefilledSquares, invalidSquares, updateSquare, readOnly }: SudoCoolSectionProps) {
+function SudoCoolSection({ sectionIndex }: SudoCoolSectionProps) {
+    const context = useContext(BoardContext);
     const sectionSquares = [];
-    for (let squareIndex = 0; squareIndex < boardSize; squareIndex++) {
-        const sectionsInBoard = Math.sqrt(boardSize);
+    for (let squareIndex = 0; squareIndex < context.boardSize; squareIndex++) {
+        const sectionsInBoard = Math.sqrt(context.boardSize);
         const row = sectionsInBoard * Math.floor(sectionIndex / sectionsInBoard) + Math.floor(squareIndex / sectionsInBoard);
         const col = sectionsInBoard * (sectionIndex % sectionsInBoard) + squareIndex % sectionsInBoard;
 
-        const valueIndex = sectionIndex * boardSize + squareIndex;
-        const value = squares[valueIndex];
-        const prefilled = prefilledSquares.includes(valueIndex);
-        const invalid = invalidSquares.includes(valueIndex);
+        const valueIndex = sectionIndex * context.boardSize + squareIndex;
+        const value = context.squares[valueIndex];
+        const prefilled = context.solution != null && context.solution.prefilledSquares.includes(valueIndex);
+        const invalid = context.solution != null && context.solution.invalidSquares.includes(valueIndex);
 
-        const key = `${boardSize}-${squareIndex}`;
+        const key = `${context.boardSize}-${squareIndex}`;
         sectionSquares.push(
             <SudoCoolSquare
                 key={key}
@@ -58,12 +60,10 @@ function SudoCoolSection({ boardSize, sectionIndex, squares, prefilledSquares, i
                 value={value}
                 prefilled={prefilled}
                 invalid={invalid}
-                squareIndex={squareIndex}
-                updateSquare={updateSquare}
-                readOnly={readOnly} />)
+                squareIndex={squareIndex} />)
     }
 
-    const className = `sudocool-section sudocool-section-${boardSize}`;
+    const className = `sudocool-section sudocool-section-${context.boardSize}`;
     return (
         <div className={className}>
             {sectionSquares}
@@ -71,32 +71,19 @@ function SudoCoolSection({ boardSize, sectionIndex, squares, prefilledSquares, i
     )
 }
 
-type SudoCoolBoardProps = {
-    boardSize: number,
-    squares: Array<string>,
-    prefilledSquares: Array<number>,
-    invalidSquares: Array<number>,
-    updateSquare: Function,
-    readOnly: boolean
-}
-function SudoCoolBoard({ boardSize, squares, prefilledSquares, invalidSquares, updateSquare, readOnly }: SudoCoolBoardProps) {
+function SudoCoolBoard() {
+    const context = useContext(BoardContext);
     const sections = [];
-    for (let sectionIndex = 0; sectionIndex < boardSize; sectionIndex++) {
+    for (let sectionIndex = 0; sectionIndex < context.boardSize; sectionIndex++) {
 
-        const key = `${boardSize}-${sectionIndex}`;
+        const key = `${context.boardSize}-${sectionIndex}`;
         sections.push(
             <SudoCoolSection
                 key={key}
-                boardSize={boardSize}
-                sectionIndex={sectionIndex}
-                squares={squares}
-                prefilledSquares={prefilledSquares}
-                invalidSquares={invalidSquares}
-                updateSquare={updateSquare}
-                readOnly={readOnly} />)
+                sectionIndex={sectionIndex} />)
     }
 
-    const className = `sudocool-table sudocool-table-${boardSize}`;
+    const className = `sudocool-table sudocool-table-${context.boardSize}`;
     return (
         <div className="sudocool-table-wrapper">
             <div className={className}>
@@ -106,24 +93,17 @@ function SudoCoolBoard({ boardSize, squares, prefilledSquares, invalidSquares, u
     );
 }
 
-type SudoCoolSolveStatusProps = {
-    readOnly: boolean,
-    solved: boolean,
-    invalid: boolean
-}
-function SudoCoolNavBar({ readOnly, solved, invalid }: SudoCoolSolveStatusProps) {
-
-    let className = "";
-    let message = "";
-    if ( invalid ) {
-        className = "status status-error";
-        message = "Invalid board";
-    } else if ( solved ) {
-        className = "status status-success";
-        message = "Board solved!";   
-    } else {
-        className = "status status-warning";
-        message = "Unable to solve board";
+function SudoCoolNavBar({ solution }: {solution: BoardSolutionType | null}) {
+    let className = "status status-warning";
+    let message = "Unable to solve board";
+    if ( solution ) {
+        if ( solution.invalid ) {
+            className = "status status-error";
+            message = "Invalid board";
+        } else if ( solution.solved ) {
+            className = "status status-success";
+            message = "Board solved!";   
+        }
     }
     
     return (
@@ -133,16 +113,13 @@ function SudoCoolNavBar({ readOnly, solved, invalid }: SudoCoolSolveStatusProps)
 
                 {/* status-container prevents flexbox aligned items in the navbar shifting when adding content */}
                 <div className="status-container">
-                    { readOnly && <div className={className}>{message}</div> }
+                    { solution && <div className={className}>{message}</div> }
                 </div>
 
                 <a href="https://github.com/MomomeYeah/react-sudocool">
                     <img src="github-mark-white.svg" alt="GitHub Profile"/>
                 </a>
             </nav>
-        
-
-            
         </>
     );
 }
@@ -151,11 +128,8 @@ export default function App() {
     const [boardSize, setBoardSize] = useState(9);
     const [history, setHistory] = useState([Array(boardSize ** 2).fill("")]);
     const [squares, setSquares] = useState(history[0]);
-    const [readOnly, setReadOnly] = useState(false);
-    const [solved, setsolved] = useState(false);
-    const [prefilledSquares, setPrefilledSquares] = useState([] as Array<number>);
-    const [invalid, setInvalid] = useState(false);
-    const [invalidSquares, setInvalidSquares] = useState([] as Array<number>);
+
+    const [solution, setSolution] = useState<BoardSolutionType | null>(null);
 
     function updateSquare(sectionIndex: number, squareIndex: number, value:string) {
         const newSquares = squares.slice();
@@ -167,28 +141,22 @@ export default function App() {
     // submit the board for solving
     function handleClickSolve() {
         // if the board is already solved, don't attempt to re-solve
-        if ( readOnly ) return;
+        if ( solution ) return;
 
-        // otherwise, we're good to go
+        // otherwise, solve the board
         const board = new Board(boardSize);
-        const solvedBoard = board.solution;
+        setSolution(board.solution);
+
+        // update history
+        const solvedBoard = board.solution.solution;
         setHistory([...history, solvedBoard]);
         setSquares(solvedBoard);
-        setReadOnly(true);
-        setsolved(board.solved);
-        setPrefilledSquares(board.prefilledSquares);
-        setInvalid(board.invalid);
-        setInvalidSquares(board.invalidSquares);
     }
 
     function populateBoard(squares: Array<string>) {
+        setSolution(null);
         setHistory([squares]);
         setSquares(squares);
-        setReadOnly(false);
-        setsolved(false);
-        setPrefilledSquares([] as Array<number>);
-        setInvalid(false);
-        setInvalidSquares([] as Array<number>);
     }
 
     // remove the solved board, reverting back to edit mode
@@ -238,22 +206,18 @@ export default function App() {
 
     return (
         <>
-            <SudoCoolNavBar readOnly={readOnly} solved={solved} invalid={invalid} />
+            <SudoCoolNavBar solution={solution} />
             <div className="sudocool-container">
-                <SudoCoolBoard
-                    boardSize={boardSize}
-                    squares={squares}
-                    prefilledSquares={prefilledSquares}
-                    invalidSquares={invalidSquares}
-                    updateSquare={updateSquare}
-                    readOnly={readOnly} />
+                <BoardContext.Provider value={{ boardSize, squares, solution, updateSquare }}>
+                    <SudoCoolBoard />
+                </BoardContext.Provider>
                 <div className="buttonGroup">
                     <select className="selector" defaultValue={boardSize} onChange={e => handleBoardSizeInput(e.target.value)}>
                         <option value="4">4x4</option>
                         <option value="9">9x9</option>
                         <option value="16">16x16</option>
                     </select>
-                    { readOnly ?
+                    { solution ?
                         <input type="button" value="Reset" className="button" onClick={handleClickReset}/> :
                         <input type="button" value="Solve" className="button" onClick={handleClickSolve}/>
                     }

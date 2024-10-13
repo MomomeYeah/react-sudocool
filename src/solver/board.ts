@@ -2,6 +2,14 @@ import { Square } from './square';
 import { Row, Column, Section } from './squareSet';
 import { Solver } from './solver';
 
+export type BoardSolutionType = {
+    solved: boolean,
+    solution: Array<string>,
+    prefilledSquares: Array<number>,
+    invalid: boolean,
+    invalidSquares: Array<number>
+}
+
 export class Board {
     /* Class representing the Sudoku board */
 
@@ -13,21 +21,20 @@ export class Board {
     public squares: Array<Square>;
 
     // return values
-    public solution: Array<string>;
-    public solved: boolean;
-    public prefilledSquares: Array<number>;
-    public invalid: boolean;
-    public invalidSquares: Array<number>;
+    public solution: BoardSolutionType;
 
     constructor(boardSize: number) {
         this.boardSize = boardSize;
         this.validPossibilities = "123456789ABCDEFG".split("").slice(0, this.boardSize);
 
         // initialise return values to their defaults
-        this.solution = [];
-        this.solved = false;
-        this.invalid = false;
-        this.invalidSquares = [];
+        this.solution = {
+            solved: false,
+            solution: [],
+            prefilledSquares: [],
+            invalid: true,
+            invalidSquares: []
+        }
 
         // initialise rows, columns, and sections
         this.rows = new Map();
@@ -66,13 +73,12 @@ export class Board {
             }
         });
 
-        this.prefilledSquares = [];
         // finally loop over all squares
         this.squares.forEach((square, index) => {
             // for each square, if it's solved
             if ( square.solved ) {
                 // add it to the list of squares that were filled in before solving
-                this.prefilledSquares.push(index);
+                this.solution.prefilledSquares.push(index);
 
                 // remove possibilities corresponding to solved squares in the same row, column, or section
                 this.squares.forEach(unsolved_square => {
@@ -106,10 +112,10 @@ export class Board {
         // first check to see if the board is valid
         let invalidSquares = this.getInvalidSquares();
         if ( invalidSquares.length > 0 ) {
-            this.solution = this.squares.map(square => square.value ?? "");
-            this.solved = false;
-            this.invalid = true;
-            this.invalidSquares = invalidSquares;
+            this.solution.solution = this.squares.map(square => square.value ?? "");
+            this.solution.solved = false;
+            this.solution.invalid = true;
+            this.solution.invalidSquares = invalidSquares;
 
             // return early without attempting to solve
             return;
@@ -120,17 +126,17 @@ export class Board {
         solver.solve();
 
         // populate board solution, either partial or complete
-        this.solution = this.squares.map(square => square.value ?? "");
+        this.solution.solution = this.squares.map(square => square.value ?? "");
 
         // check again to make sure the results is valid and consistent
         invalidSquares = this.getInvalidSquares();
         if ( invalidSquares.length > 0 ) {
-            this.solved = false;
-            this.invalid = true;
-            this.invalidSquares = invalidSquares;
+            this.solution.solved = false;
+            this.solution.invalid = true;
+            this.solution.invalidSquares = invalidSquares;
         } else {
-            this.solved = this.getIsSolved();
-            this.invalid = false;
+            this.solution.solved = this.getIsSolved();
+            this.solution.invalid = false;
         }
     }
 
@@ -146,16 +152,23 @@ export class Board {
         /** Is the board invalid? The board is invalid if:
          * 
          * - any squares have invalid characters
-         * - TODO any squares that are in the same row, col, or section as squares with the same value
+         * - any squares that are in the same row, col, or section as squares with the same value
          * - any squares remain unsolved but have no remaining possibilities
          */
         const invalidSquares = [] as Array<number>;
         this.squares.forEach((square, index) => {
-            // invalid characters
-            if ( square.value && ! this.validPossibilities.includes(square.value) ) {
-                invalidSquares.push(index);
-            // no remaining possibilities
-            } else if ( ! square.solved && square.possibilities.length === 0 ) {
+            if (
+                // invalid characters
+                ( square.value && ! this.validPossibilities.includes(square.value) ) ||
+                // multiple solved squares in the same row, column, or section have the same value    
+                (
+                    this.rows.get(square.row)?.containsClashesWith(square) ||
+                    this.columns.get(square.col)?.containsClashesWith(square) ||
+                    this.sections.get(square.section)?.containsClashesWith(square)
+                ) ||
+                // no remaining possibilities
+                ( ! square.solved && square.possibilities.length === 0 )
+            ) {
                 invalidSquares.push(index);
             }
         });
