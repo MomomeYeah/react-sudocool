@@ -11,24 +11,19 @@ type BoardContextProps = {
 const BoardContext = createContext({} as BoardContextProps);
 
 type SudoCoolSquareProps = {
-    row: number,
-    col: number,
     section: number,
     value: string,
     prefilled: boolean,
     invalid: boolean,
     squareIndex: number
 }
-function SudoCoolSquare({ row, col, section, value, prefilled, invalid, squareIndex } : SudoCoolSquareProps) {
+function SudoCoolSquare({ section, value, prefilled, invalid, squareIndex } : SudoCoolSquareProps) {
     const context = useContext(BoardContext);
     const className = `sudocool-item ${invalid ? "invalid" : ""} ${prefilled ? "prefilled" : ""}`;
     return (
         <input
             className={className}
             readOnly={context.solution != null}
-            data-row={row}
-            data-col={col}
-            data-section={section}
             value={value}
             onChange={(e) => context.updateSquare(section, squareIndex, e.target.value)} />
     )
@@ -41,10 +36,6 @@ function SudoCoolSection({ sectionIndex }: SudoCoolSectionProps) {
     const context = useContext(BoardContext);
     const sectionSquares = [];
     for (let squareIndex = 0; squareIndex < context.boardSize; squareIndex++) {
-        const sectionsInBoard = Math.sqrt(context.boardSize);
-        const row = sectionsInBoard * Math.floor(sectionIndex / sectionsInBoard) + Math.floor(squareIndex / sectionsInBoard);
-        const col = sectionsInBoard * (sectionIndex % sectionsInBoard) + squareIndex % sectionsInBoard;
-
         const valueIndex = sectionIndex * context.boardSize + squareIndex;
         const value = context.squares[valueIndex];
         const prefilled = context.solution != null && context.solution.prefilledSquares.includes(valueIndex);
@@ -54,8 +45,6 @@ function SudoCoolSection({ sectionIndex }: SudoCoolSectionProps) {
         sectionSquares.push(
             <SudoCoolSquare
                 key={key}
-                row={row}
-                col={col}
                 section={sectionIndex}
                 value={value}
                 prefilled={prefilled}
@@ -144,7 +133,7 @@ export default function App() {
         if ( solution ) return;
 
         // otherwise, solve the board
-        const board = new Board(boardSize);
+        const board = new Board(boardSize, squares);
         setSolution(board.solution);
 
         // update history

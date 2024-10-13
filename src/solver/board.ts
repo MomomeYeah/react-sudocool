@@ -23,7 +23,7 @@ export class Board {
     // return values
     public solution: BoardSolutionType;
 
-    constructor(boardSize: number) {
+    constructor(boardSize: number, squares: Array<string>) {
         this.boardSize = boardSize;
         this.validPossibilities = "123456789ABCDEFG".split("").slice(0, this.boardSize);
 
@@ -47,29 +47,29 @@ export class Board {
         }
 
         // initialise all board squares, and read their values
+        const sectionRows = Math.sqrt(boardSize);
         this.squares = [];
-        document.querySelectorAll(".sudocool-item").forEach(element => {
-            // cast to HTMLInputElement so we can access the dataset
-            const htmlElement = element as HTMLInputElement;
+        squares.forEach((square, index) => {
+            // generate row, column, and section indices
+            const sectionIndex = Math.floor(index / boardSize);
+            const squareIndex = index % boardSize;
+            const rowIndex = sectionRows * Math.floor(sectionIndex / sectionRows) + Math.floor(squareIndex / sectionRows);
+            const colIndex = sectionRows * (sectionIndex % sectionRows) + squareIndex % sectionRows;
+            const value = square;
 
-            // fetch data identifiers from the element
-            const row = Number(htmlElement.dataset.row);
-            const col = Number(htmlElement.dataset.col);
-            const section = Number(htmlElement.dataset.section);
-            const value = htmlElement.value;
-
-            const newSquare = new Square(row, col, section, this.validPossibilities, value);
+            // create Square object
+            const newSquare = new Square(rowIndex, colIndex, sectionIndex, this.validPossibilities, value);
             this.squares.push(newSquare);
-            this.rows.get(row)?.squares.push(newSquare);
-            this.columns.get(col)?.squares.push(newSquare);
-            this.sections.get(section)?.squares.push(newSquare);
+            this.rows.get(rowIndex)?.squares.push(newSquare);
+            this.columns.get(colIndex)?.squares.push(newSquare);
+            this.sections.get(sectionIndex)?.squares.push(newSquare);
 
             // for each square, if it's value is set, remove that value from the list of possibilities 
             // associated with it's row, column, and section
-            if ( htmlElement.value ) {
-                this.rows.get(row)?.removePossibility(value);
-                this.columns.get(col)?.removePossibility(value);
-                this.sections.get(section)?.removePossibility(value);
+            if ( value ) {
+                this.rows.get(rowIndex)?.removePossibility(value);
+                this.columns.get(colIndex)?.removePossibility(value);
+                this.sections.get(sectionIndex)?.removePossibility(value);
             }
         });
 
