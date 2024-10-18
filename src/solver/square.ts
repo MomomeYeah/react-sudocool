@@ -62,7 +62,7 @@ export class Square {
     }
 
     hasPossibility(possibility: string) {
-        return ! this.solved && this.possibilities.includes(possibility);
+        return this.possibilities.includes(possibility);
     }
 
     shareAnyPossibilities(other: Square) {
