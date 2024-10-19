@@ -8,7 +8,7 @@ type BoardContextProps = {
     solution: BoardSolutionType | null,
     updateSquare: Function
 }
-const BoardContext = createContext({} as BoardContextProps);
+export const BoardContext = createContext({} as BoardContextProps);
 
 type SudoCoolSquareProps = {
     section: number,
@@ -17,7 +17,7 @@ type SudoCoolSquareProps = {
     invalid: boolean,
     squareIndex: number
 }
-function SudoCoolSquare({ section, value, prefilled, invalid, squareIndex } : SudoCoolSquareProps) {
+export function SudoCoolSquare({ section, value, prefilled, invalid, squareIndex } : SudoCoolSquareProps) {
     const context = useContext(BoardContext);
     const className = `sudocool-item ${invalid ? "invalid" : ""} ${prefilled ? "prefilled" : ""}`;
     return (
@@ -113,7 +113,7 @@ function SudoCoolNavBar({ solution }: {solution: BoardSolutionType | null}) {
     );
 }
 
-export default function App() {
+export function App() {
     const [boardSize, setBoardSize] = useState(9);
     const [history, setHistory] = useState([Array(boardSize ** 2).fill("")]);
     const [squares, setSquares] = useState(history[0]);
